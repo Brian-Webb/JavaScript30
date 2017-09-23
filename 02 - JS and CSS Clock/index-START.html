@@ -62,13 +62,52 @@
       background:black;
       position: absolute;
       top:50%;
+      transform-origin: 100%;
+      transform: rotate(90deg);
+      transition: all 0.5s;
+      transition-timing-function: cubic-bezier(0, 2.8, 0.58, 1)
     }
 
   </style>
 
   <script>
+    class Clock {
+      constructor(hands) {
+        this.hands = hands;
+      }
 
+      update_hands_rotation(date) {
+        for(let hand in this.hands) this.hands[hand].set_rotation(date);
+      }
+    }
 
+    class Hand {
+      constructor(hand, type) {
+        this.hand = hand;
+
+        this.time_function = `get${type}`;
+      }
+
+      set_rotation(date) {
+        const degrees = date[this.time_function]() / 60 * 360 + 90;
+
+        this.hand.style.transform = `rotate(${degrees}deg)`;
+      }
+    }
+
+    const clock = new Clock({
+      second_hand : new Hand(document.querySelector('.second-hand'), 'Seconds'),
+      minute_hand : new Hand(document.querySelector('.min-hand'), 'Minutes'),
+      hour_hand   : new Hand(document.querySelector('.hour-hand'), 'Hours')
+    });
+
+    function setDate() {
+      const now = new Date();
+
+      clock.update_hands_rotation(now);
+    }
+
+    setInterval(setDate, 1000);
   </script>
 </body>
 </html>
